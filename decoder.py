@@ -28,7 +28,7 @@ class JPEGFileReader:
         if size == 0:
             return 0
 
-        # the most significant bit indicates the sign of the number
+        # chỉ ra dấu của số
         bin_num = self.__read_str(size)
         if bin_num[0] == "1":
             return self.__int2(bin_num)
@@ -63,7 +63,6 @@ class JPEGFileReader:
 
     def read_huffman_code(self, table):
         prefix = ""
-        # TODO: break the loop if __read_char is not returing new char
         while prefix not in table:
             prefix += self.__read_char()
         return table[prefix]
@@ -108,7 +107,6 @@ def read_image_file(filepath):
 
             cells_count = 0
 
-            # TODO: try to make reading AC coefficients better
             while cells_count < 63:
                 run_length, size = reader.read_huffman_code(ac_table)
 
@@ -131,7 +129,6 @@ def read_image_file(filepath):
 
 
 def zigzag_to_block(zigzag):
-    # assuming that the width and the height of the block are equal
     rows = cols = int(math.sqrt(len(zigzag)))
 
     if rows * cols != len(zigzag):
@@ -164,10 +161,8 @@ def main():
 
     dc, ac, tables, blocks_count = read_image_file(args.file_to_decompress)
 
-    # assuming that the block is a 8x8 square
     block_side = 8
 
-    # assuming that the image height and width are equal
     image_side = int(math.sqrt(blocks_count)) * block_side
 
     blocks_per_line = image_side // block_side

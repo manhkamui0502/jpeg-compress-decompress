@@ -47,7 +47,7 @@ class HuffmanTree:
     def __init__(self, arr):
         q = PriorityQueue()
 
-        # calculate frequencies and insert them into a priority queue
+        # tính toán tần suất và chèn chúng vào hàng đợi ưu tiên
         for val, freq in self.__calc_freq(arr).items():
             q.put(self.__Node.init_leaf(val, freq))
 
@@ -59,7 +59,7 @@ class HuffmanTree:
 
         self.__root = q.get()
 
-        # dictionary to store the Huffman table
+        # lưu trữ bảng Huffman
         self.__value_to_bitstring = {}
 
     def value_to_bitstring_table(self):

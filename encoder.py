@@ -79,13 +79,12 @@ def main():
     Cb = npmat[::2, ::2, 1]
     Cr = npmat[::2, ::2, 2]
 
-    # size of the image in bits before compression
     totalNumberOfBitsWithoutCompression = (
         len(y) * len(y[0]) * 8 + len(Cb) * len(Cb[0]) * 8 + len(Cr) * len(Cr[0]) * 8
     )
     blocks_count = rows // 8 * cols // 8
 
-    # dc is the top-left cell of the block, ac are all the other cells
+    # dc là ô ở góc trên bên trái của khối, ac là tất cả các ô còn lại.
     dc = np.empty((blocks_count, 3), dtype=np.int32)
     ac = np.empty((blocks_count, 63, 3), dtype=np.int32)
 
@@ -96,7 +95,6 @@ def main():
             except NameError:
                 block_index = 0
             for k in range(3):
-                # split 8x8 block and center the data range on zero
                 # [0, 255] --> [-128, 127]
                 block = npmat[i : i + 8, j : j + 8, k] - 128
                 # print(block)
