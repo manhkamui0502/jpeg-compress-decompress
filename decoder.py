@@ -22,7 +22,7 @@ class JPEGFileReader:
     SIZE_BITS = 4
 
     def __init__(self, filepath):
-        self.__file = open(filepath, 'r')
+        self.__file = open(filepath, "r")
 
     def read_int(self, size):
         if size == 0:
@@ -30,7 +30,7 @@ class JPEGFileReader:
 
         # the most significant bit indicates the sign of the number
         bin_num = self.__read_str(size)
-        if bin_num[0] == '1':
+        if bin_num[0] == "1":
             return self.__int2(bin_num)
         else:
             return self.__int2(binstr_flip(bin_num)) * -1
@@ -62,7 +62,7 @@ class JPEGFileReader:
         return self.__read_uint(self.BLOCKS_COUNT_BITS)
 
     def read_huffman_code(self, table):
-        prefix = ''
+        prefix = ""
         # TODO: break the loop if __read_char is not returing new char
         while prefix not in table:
             prefix += self.__read_char()
@@ -87,8 +87,8 @@ def read_image_file(filepath):
     reader = JPEGFileReader(filepath)
 
     tables = dict()
-    for table_name in ['dc_y', 'ac_y', 'dc_c', 'ac_c']:
-        if 'dc' in table_name:
+    for table_name in ["dc_y", "ac_y", "dc_c", "ac_c"]:
+        if "dc" in table_name:
             tables[table_name] = reader.read_dc_table()
         else:
             tables[table_name] = reader.read_ac_table()
@@ -100,8 +100,8 @@ def read_image_file(filepath):
 
     for block_index in range(blocks_count):
         for component in range(3):
-            dc_table = tables['dc_y'] if component == 0 else tables['dc_c']
-            ac_table = tables['ac_y'] if component == 0 else tables['ac_c']
+            dc_table = tables["dc_y"] if component == 0 else tables["dc_c"]
+            ac_table = tables["ac_y"] if component == 0 else tables["ac_c"]
 
             category = reader.read_huffman_code(dc_table)
             dc[block_index, component] = reader.read_int(category)
@@ -151,11 +151,10 @@ def dequantize(block, component):
 
 
 def idct_2d(image):
-    return fftpack.idct(fftpack.idct(image.T, norm='ortho').T, norm='ortho')
+    return fftpack.idct(fftpack.idct(image.T, norm="ortho").T, norm="ortho")
 
 
 def main():
-
     parser = argparse.ArgumentParser()
     parser.add_argument("file_to_decompress", help="file path for decompression")
     parser.add_argument("image_restored", help="restored image name")
@@ -182,12 +181,12 @@ def main():
         for c in range(3):
             zigzag = [dc[block_index, c]] + list(ac[block_index, :, c])
             quant_matrix = zigzag_to_block(zigzag)
-            dct_matrix = dequantize(quant_matrix, 'lum' if c == 0 else 'chrom')
+            dct_matrix = dequantize(quant_matrix, "lum" if c == 0 else "chrom")
             block = idct_2d(dct_matrix)
-            npmat[i:i+8, j:j+8, c] = block + 128
+            npmat[i : i + 8, j : j + 8, c] = block + 128
 
-    image = Image.fromarray(npmat, 'YCbCr')
-    image = image.convert('RGB')
+    image = Image.fromarray(npmat, "YCbCr")
+    image = image.convert("RGB")
     image.save(image_restored_path)
 
 

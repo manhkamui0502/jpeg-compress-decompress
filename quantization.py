@@ -2,7 +2,6 @@ import numpy as np
 
 
 def get_quantization_table(type):
-    # JPEG standard quantization table, reference: https://www.sciencedirect.com/topics/engineering/quantization-table
     if type == "lum":
         table = np.array(
             [

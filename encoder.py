@@ -9,6 +9,7 @@ from scipy import fftpack
 from PIL import Image
 from huffman import HuffmanTree
 
+
 def write_to_file(filepath, dc, ac, blocks_count, tables):
     try:
         f = open(filepath, "w")

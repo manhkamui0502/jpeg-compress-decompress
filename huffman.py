@@ -1,7 +1,7 @@
 from queue import PriorityQueue
 
-class HuffmanTree:
 
+class HuffmanTree:
     class __Node:
         def __init__(self, value, freq, left_child, right_child):
             self.value = value
@@ -22,7 +22,12 @@ class HuffmanTree:
             return self.value is not None
 
         def __eq__(self, other):
-            return (self.value, self.freq, self.left_child, self.right_child) == (other.value, other.freq, other.left_child, other.right_child)
+            return (self.value, self.freq, self.left_child, self.right_child) == (
+                other.value,
+                other.freq,
+                other.left_child,
+                other.right_child,
+            )
 
         def __ne__(self, other):
             return not (self == other)
@@ -63,14 +68,14 @@ class HuffmanTree:
         return self.__value_to_bitstring
 
     def __create_huffman_table(self):
-        def tree_traverse(current_node, bitstring=''):
+        def tree_traverse(current_node, bitstring=""):
             if current_node is None:
                 return
             if current_node.is_leaf():
                 self.__value_to_bitstring[current_node.value] = bitstring
                 return
-            tree_traverse(current_node.left_child, bitstring + '0')
-            tree_traverse(current_node.right_child, bitstring + '1')
+            tree_traverse(current_node.left_child, bitstring + "0")
+            tree_traverse(current_node.right_child, bitstring + "1")
 
         tree_traverse(self.__root)
 

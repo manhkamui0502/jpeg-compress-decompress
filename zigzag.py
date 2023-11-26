@@ -6,7 +6,7 @@ def zigzag_points(rows, cols):
     # hằng số cho hướng
     UP, DOWN, RIGHT, LEFT, UP_RIGHT, DOWN_LEFT = range(6)
 
-    # move the point in different directions
+    # di chuyển theo hướng khác nhau
     def move(direction, point):
         return {
             UP: lambda point: (point[0] - 1, point[1]),
@@ -17,14 +17,14 @@ def zigzag_points(rows, cols):
             DOWN_LEFT: lambda point: move(DOWN, move(LEFT, point)),
         }[direction](point)
 
-    # return true if point is inside the block bounds
+    # trả về True nếu điểm nằm trong ranh giới của khối
     def inbounds(point):
         return 0 <= point[0] < rows and 0 <= point[1] < cols
 
-    # start in the top-left cell
+    # bắt đầu từ ô ở góc trên bên trái.
     point = (0, 0)
 
-    # True when moving up-right, False when moving down-left
+    # true khi di chuyển lên phải, false khi di chuyển xuống trái
     move_up = True
 
     for i in range(rows * cols):
@@ -52,6 +52,7 @@ def zigzag_points(rows, cols):
 def block_to_zigzag(block):
     return np.array([block[point] for point in zigzag_points(*block.shape)])
 
+
 def zigzag_to_block(zigzag):
     rows = cols = int(math.sqrt(len(zigzag)))
     block = np.empty((rows, cols), np.int32)
@@ -60,6 +61,7 @@ def zigzag_to_block(zigzag):
         block[point] = zigzag[i]
 
     return block
+
 
 def bits_required(n):
     n = abs(n)
@@ -71,7 +73,7 @@ def bits_required(n):
 
 
 def binstr_flip(binstr):
-    # check if binstr is a binary string
+    # kiểm tra xem binstr có phải là 1 chuỗi nhị phân hay không
     if not set(binstr).issubset("01"):
         raise ValueError("binstr should have only '0's and '1's")
     return "".join(map(lambda c: "0" if c == "1" else "1", binstr))
