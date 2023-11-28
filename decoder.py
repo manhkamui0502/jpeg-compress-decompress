@@ -4,6 +4,7 @@ import math
 import numpy as np
 from rlc import *
 from dct import *
+from padding import *
 from quantization import *
 from scipy import fftpack
 from PIL import Image
@@ -21,8 +22,19 @@ class JPEGFileReader:
     RUN_LENGTH_BITS = 4
     SIZE_BITS = 4
 
+    # Thêm constant cho kích thước ảnh gốc
+    ORIGINAL_SIZE_BITS_H = 32  # 32 bits cho chiều cao
+    ORIGINAL_SIZE_BITS_W = 32  # 32 bits cho chiều rộng
+
     def __init__(self, filepath):
         self.__file = open(filepath, "r")
+
+    def read_original_size(self):
+        # Đọc chiều cao và chiều rộng từ đầu file
+        return (
+            self.__read_uint(self.ORIGINAL_SIZE_BITS_H),
+            self.__read_uint(self.ORIGINAL_SIZE_BITS_W),
+        )
 
     def read_int(self, size):
         if size == 0:
@@ -85,6 +97,9 @@ class JPEGFileReader:
 def read_image_file(filepath):
     reader = JPEGFileReader(filepath)
 
+    # Đọc kích thước gốc từ đầu file
+    original_size = reader.read_original_size()
+
     tables = dict()
     for table_name in ["dc_y", "ac_y", "dc_c", "ac_c"]:
         if "dc" in table_name:
@@ -125,7 +140,7 @@ def read_image_file(filepath):
                         ac[block_index, cells_count, component] = value
                     cells_count += 1
 
-    return dc, ac, tables, blocks_count
+    return dc, ac, tables, blocks_count, original_size
 
 
 def zigzag_to_block(zigzag):
@@ -159,7 +174,9 @@ def main():
     file_path_to_decompress = args.file_to_decompress
     image_restored_path = args.image_restored
 
-    dc, ac, tables, blocks_count = read_image_file(args.file_to_decompress)
+    dc, ac, tables, blocks_count, original_size = read_image_file(
+        args.file_to_decompress
+    )
 
     block_side = 8
 
@@ -180,6 +197,8 @@ def main():
             block = idct_2d(dct_matrix)
             npmat[i : i + 8, j : j + 8, c] = block + 128
 
+    rows, cols = original_size
+    npmat = remove_padding(npmat, (rows, cols))
     image = Image.fromarray(npmat, "YCbCr")
     image = image.convert("RGB")
     image.save(image_restored_path)

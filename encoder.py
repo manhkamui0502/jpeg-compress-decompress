@@ -4,19 +4,25 @@ import math
 import numpy as np
 from rlc import *
 from dct import *
+from padding import *
 from quantization import *
 from scipy import fftpack
 from PIL import Image
 from huffman import HuffmanTree
 
 
-def write_to_file(filepath, dc, ac, blocks_count, tables):
+def write_to_file(filepath, dc, ac, blocks_count, tables, rows, cols):
     try:
         f = open(filepath, "w")
     except FileNotFoundError as e:
         raise FileNotFoundError(
             "No such directory: {}".format(os.path.dirname(filepath))
         ) from e
+
+    # 32 bits biểu diễn chiều rộng của ảnh
+    f.write(uint_to_binstr(rows, 32))
+    # 32 bits biểu diễn chiều cao của ảnh
+    f.write(uint_to_binstr(cols, 32))
 
     for table_name in ["dc_y", "ac_y", "dc_c", "ac_c"]:
         # 16 bits biểu diễn table_size
@@ -74,22 +80,30 @@ def main():
     # block size: 8x8
     rows, cols = npmat.shape[0], npmat.shape[1]
 
+    rows_pad = math.ceil(rows / 8) * 8
+
+    cols_pad = math.ceil(cols / 8) * 8
+
+    if rows_pad > cols_pad:
+        cols_pad = rows_pad
+    elif rows_pad < cols_pad:
+        rows_pad = cols_pad
+
     # subsampling(4:2:0) + padding
     y = npmat[:, :, 0]
     Cb = npmat[::2, ::2, 1]
     Cr = npmat[::2, ::2, 2]
 
-    totalNumberOfBitsWithoutCompression = (
-        len(y) * len(y[0]) * 8 + len(Cb) * len(Cb[0]) * 8 + len(Cr) * len(Cr[0]) * 8
-    )
-    blocks_count = rows // 8 * cols // 8
-
+    blocks_count = rows_pad // 8 * cols_pad // 8
+    npmat = update_npmat_padding(npmat, rows_pad, cols_pad)
     # dc là ô ở góc trên bên trái của khối, ac là tất cả các ô còn lại.
     dc = np.empty((blocks_count, 3), dtype=np.int32)
     ac = np.empty((blocks_count, 63, 3), dtype=np.int32)
-
-    for i in range(0, rows, 8):
-        for j in range(0, cols, 8):
+    # image = Image.fromarray(npmat, "YCbCr")
+    # image = image.convert("RGB")
+    # image.show()
+    for i in range(0, rows_pad, 8):
+        for j in range(0, cols_pad, 8):
             try:
                 block_index += 1
             except NameError:
@@ -126,7 +140,7 @@ def main():
         "dc_c": H_DC_C.value_to_bitstring_table(),
         "ac_c": H_AC_C.value_to_bitstring_table(),
     }
-    write_to_file(output_image_path, dc, ac, blocks_count, tables)
+    write_to_file(output_image_path, dc, ac, blocks_count, tables, rows, cols)
 
 
 if __name__ == "__main__":
