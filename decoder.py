@@ -143,29 +143,6 @@ def read_image_file(filepath):
     return dc, ac, tables, blocks_count, original_size
 
 
-def zigzag_to_block(zigzag):
-    rows = cols = int(math.sqrt(len(zigzag)))
-
-    if rows * cols != len(zigzag):
-        raise ValueError("length of zigzag should be a perfect square")
-
-    block = np.empty((rows, cols), np.int32)
-
-    for i, point in enumerate(zigzag_points(rows, cols)):
-        block[point] = zigzag[i]
-
-    return block
-
-
-def dequantize(block, component):
-    q = get_quantization_table(component)
-    return block * q
-
-
-def idct_2d(image):
-    return fftpack.idct(fftpack.idct(image.T, norm="ortho").T, norm="ortho")
-
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("file_to_decompress", help="file path for decompression")
@@ -193,8 +170,8 @@ def main():
         for c in range(3):
             zigzag = [dc[block_index, c]] + list(ac[block_index, :, c])
             quant_matrix = zigzag_to_block(zigzag)
-            dct_matrix = dequantize(quant_matrix, "lum" if c == 0 else "chrom")
-            block = idct_2d(dct_matrix)
+            dct_matrix = dequant_block(quant_matrix, "lum" if c == 0 else "chrom")
+            block = iDCT_2D(dct_matrix)
             npmat[i : i + 8, j : j + 8, c] = block + 128
 
     rows, cols = original_size
