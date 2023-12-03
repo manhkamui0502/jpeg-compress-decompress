@@ -23,8 +23,8 @@ class JPEGFileReader:
     SIZE_BITS = 4
 
     # Thêm constant cho kích thước ảnh gốc
-    ORIGINAL_SIZE_BITS_H = 32  # 32 bits cho chiều cao
-    ORIGINAL_SIZE_BITS_W = 32  # 32 bits cho chiều rộng
+    ORIGINAL_SIZE_BITS_H = 16  # 16 bits cho chiều cao
+    ORIGINAL_SIZE_BITS_W = 16  # 16 bits cho chiều rộng
 
     def __init__(self, filepath):
         self.__file = open(filepath, "r")
