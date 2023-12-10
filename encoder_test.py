@@ -113,19 +113,16 @@ def main():
                 block = npmat[i : i + 8, j : j + 8, k] - 128
                 print('\nBlock: \n')
                 print(block)
-
                 dct_matrix = DCT_2D(block)
                 print('\nAfter DCT: \n')
                 print(dct_matrix)
-
                 quant_matrix = quant_block(dct_matrix, "lum" if k == 0 else "chrom")
                 print('\nAfter Quant: \n')
                 print(quant_matrix)
-
                 zz = block_to_zigzag(quant_matrix)
                 print('\nAfter zigzag scan: \n')
                 print(zz)
-                
+                run_length_encode(zz)
                 dc[block_index, k] = zz[0]
                 ac[block_index, :, k] = zz[1:]
 
