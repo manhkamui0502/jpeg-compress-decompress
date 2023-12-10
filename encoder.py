@@ -19,9 +19,9 @@ def write_to_file(filepath, dc, ac, blocks_count, tables, rows, cols):
             "No such directory: {}".format(os.path.dirname(filepath))
         ) from e
 
-    # 16 bits biểu diễn chiều rộng của ảnh
-    f.write(uint_to_binstr(rows, 16))
     # 16 bits biểu diễn chiều cao của ảnh
+    f.write(uint_to_binstr(rows, 16))
+    # 16 bits biểu diễn chiều rộng của ảnh
     f.write(uint_to_binstr(cols, 16))
 
     for table_name in ["dc_y", "ac_y", "dc_c", "ac_c"]:
