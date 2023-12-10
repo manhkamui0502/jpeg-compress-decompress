@@ -29,6 +29,9 @@ def run_length_encode(arr):
             symbols.append((run_length, size))
             values.append(int_to_binstr(elem))
             run_length = 0
+            
+    print("Symbols:", symbols)
+    print("Values:", values)
     return symbols, values
 
 
