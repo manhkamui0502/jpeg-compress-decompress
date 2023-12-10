@@ -176,7 +176,7 @@ def main():
 
     rows, cols = original_size
     npmat = remove_padding(npmat, (rows, cols))
-    image = Image.fromarray(npmat, "YCbCr")
+    image = image.fromarray(npmat, "YCbCr")
     image = image.convert("RGB")
     image.save(image_restored_path)
 
