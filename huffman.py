@@ -84,3 +84,21 @@ class HuffmanTree:
         for elem in arr:
             freq_dict[elem] = freq_dict.get(elem, 0) + 1
         return freq_dict
+
+
+# def main():
+#    # Nhập dãy phần tử
+#    input_arr = input("Nhập dãy phần tử: ").split()
+#
+#    # Tạo cây Huffman từ dãy phần tử
+#    huffman_tree = HuffmanTree(input_arr)
+#
+#    # Hiển thị bảng mã Huffman
+#    huffman_table = huffman_tree.value_to_bitstring_table()
+#    print("Bảng mã Huffman:")
+#    for val, bitstring in huffman_table.items():
+#        print(f"{val}: {bitstring}")
+#
+#
+# if __name__ == "__main__":
+#    main()

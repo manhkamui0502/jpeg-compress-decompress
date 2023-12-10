@@ -90,9 +90,9 @@ def main():
         rows_pad = cols_pad
 
     # subsampling(4:2:0) + padding
-    #y = npmat[:, :, 0]
-    #Cb = npmat[::2, ::2, 1]
-    #Cr = npmat[::2, ::2, 2]
+    # y = npmat[:, :, 0]
+    # Cb = npmat[::2, ::2, 1]
+    # Cr = npmat[::2, ::2, 2]
 
     blocks_count = rows_pad // 8 * cols_pad // 8
     npmat = update_npmat_padding(npmat, rows_pad, cols_pad)
