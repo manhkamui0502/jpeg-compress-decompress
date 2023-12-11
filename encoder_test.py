@@ -111,26 +111,33 @@ def main():
             for k in range(3):
                 # [0, 255] --> [-128, 127]
                 block = npmat[i : i + 8, j : j + 8, k] - 128
-                print('\nBlock: \n')
+                print('\nBlock:')
                 print(block)
                 dct_matrix = DCT_2D(block)
-                print('\nAfter DCT: \n')
+                print('\nAfter DCT:')
                 print(dct_matrix)
                 quant_matrix = quant_block(dct_matrix, "lum" if k == 0 else "chrom")
-                print('\nAfter Quant: \n')
+                print('\nAfter Quant:')
                 print(quant_matrix)
                 zz = block_to_zigzag(quant_matrix)
-                print('\nAfter zigzag scan: \n')
+                print('\nAfter zigzag scan:')
                 print(zz)
-                run_length_encode(zz)
                 dc[block_index, k] = zz[0]
                 ac[block_index, :, k] = zz[1:]
+                
 
+    print('\nDC:')
+    print(dc)
+    print('\nAC:')
+    print(ac)
+    print("\n---------------------------")
     H_DC_Y = HuffmanTree(np.vectorize(bits_required)(dc[:, 0]))
     H_DC_C = HuffmanTree(np.vectorize(bits_required)(dc[:, 1:].flat))
+    print("H_AC_Y:")
     H_AC_Y = HuffmanTree(
         flatten(run_length_encode(ac[i, :, 0])[0] for i in range(blocks_count))
     )
+    print("H_AC_C:")
     H_AC_C = HuffmanTree(
         flatten(
             run_length_encode(ac[i, :, j])[0]
@@ -138,13 +145,16 @@ def main():
             for j in [1, 2]
         )
     )
-
+    print("---------------------------")
+    print("Tables: ")
     tables = {
         "dc_y": H_DC_Y.value_to_bitstring_table(),
         "ac_y": H_AC_Y.value_to_bitstring_table(),
         "dc_c": H_DC_C.value_to_bitstring_table(),
         "ac_c": H_AC_C.value_to_bitstring_table(),
     }
+    print(tables)
+    print("-----END-----")
     write_to_file(output_image_path, dc, ac, blocks_count, tables, rows, cols)
 
 
